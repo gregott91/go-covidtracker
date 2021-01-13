@@ -37,6 +37,3 @@ steps:
     go build -v .
   workingDirectory: '$(modulePath)'
   displayName: 'Get dependencies, then build'
-
-- publish: $(System.DefaultWorkingDirectory)
-  artifact: covidtracker
