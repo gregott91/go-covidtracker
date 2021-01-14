@@ -33,7 +33,7 @@ steps:
   inputs:
     command: publish
     publishDirectory: '$(Build.ArtifactStagingDirectory)'
-    vstsFeedPublish: 'main'
+    vstsFeedPublish: 'go-covidtracker/main'
     vstsFeedPackagePublish: 'covidtracker'
     packagePublishDescription: 'Covidtracker EXE'
     verbosity: debug
