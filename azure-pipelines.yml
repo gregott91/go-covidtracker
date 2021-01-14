@@ -36,4 +36,5 @@ steps:
     vstsFeedPublish: 'main'
     vstsFeedPackagePublish: 'covidtracker'
     packagePublishDescription: 'Covidtracker EXE'
+    verbosity: debug
 
