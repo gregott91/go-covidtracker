@@ -27,7 +27,7 @@ steps:
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
 - task: PublishBuildArtifacts@1
   inputs:
-     artifactName: drop
+     artifactName: covidtracker
 - task: UniversalPackages@0
   displayName: Universal Publish
   inputs:
@@ -35,6 +35,5 @@ steps:
     publishDirectory: '$(Build.ArtifactStagingDirectory)'
     vstsFeedPublish: 'go-covidtracker/main'
     vstsFeedPackagePublish: 'covidtracker'
-    packagePublishDescription: 'Covidtracker EXE'
-    verbosity: debug
+    packagePublishDescription: 'Covidtracker'
 
