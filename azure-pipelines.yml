@@ -28,3 +28,12 @@ steps:
 - task: PublishBuildArtifacts@1
   inputs:
      artifactName: drop
+- task: UniversalPackages@0
+  displayName: Universal Publish
+  inputs:
+    command: publish
+    publishDirectory: '$(Build.ArtifactStagingDirectory)'
+    vstsFeedPublish: 'covidtracker/main'
+    vstsFeedPackagePublish: 'covidtracker'
+    packagePublishDescription: 'Covidtracker EXE'
+
