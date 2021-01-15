@@ -18,10 +18,10 @@ steps:
     command: 'get'
     arguments: '-d'
     workingDirectory: '$(System.DefaultWorkingDirectory)'
-- task: Go@0
   inputs:
     command: 'build'
     workingDirectory: '$(System.DefaultWorkingDirectory)'
+    arguments: '-o "covidtracker.exe"'
 - task: CopyFiles@2
   inputs:
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
