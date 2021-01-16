@@ -7,7 +7,7 @@ trigger:
 - main
 
 pool:
-   vmImage: 'windows'
+   vmImage: 'windows-latest'
 
 steps: 
 - task: GoTool@0
