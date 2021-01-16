@@ -7,7 +7,7 @@ trigger:
 - main
 
 pool:
-   vmImage: 'ubuntu-latest'
+   vmImage: 'windows'
 
 steps: 
 - task: GoTool@0
@@ -22,19 +22,10 @@ steps:
   inputs:
     command: 'build'
     workingDirectory: '$(System.DefaultWorkingDirectory)'
-    arguments: '-o "covidtracker.exe"'
 - task: CopyFiles@2
   inputs:
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
 - task: PublishBuildArtifacts@1
   inputs:
      artifactName: covidtracker
-- task: UniversalPackages@0
-  displayName: Universal Publish
-  inputs:
-    command: publish
-    publishDirectory: '$(Build.ArtifactStagingDirectory)'
-    vstsFeedPublish: 'go-covidtracker/main'
-    vstsFeedPackagePublish: 'covidtracker'
-    packagePublishDescription: 'Covidtracker'
 
