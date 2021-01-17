@@ -29,7 +29,7 @@ func example() {
 	</body>
 </html>`
 
-	f, err := os.Create("D:\\local\\temp\\somefile.html")
+	f, err := os.Create("D:\\local\\temp\\index.html")
 	check(err)
 
 	defer f.Close()
