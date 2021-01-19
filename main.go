@@ -1,10 +1,20 @@
 package main
 
 import (
-	"bufio"
-	"html/template"
+	"encoding/json"
+	"io/ioutil"
 	"os"
 )
+
+type Salary struct {
+	Basic, HRA, TA float64
+}
+
+type Employee struct {
+	FirstName, LastName, Email string
+	Age                        int
+	MonthlySalary              []Salary
+}
 
 func check(e error) {
 	if e != nil {
@@ -13,55 +23,31 @@ func check(e error) {
 }
 
 func main() {
-	example()
-}
-
-func example() {
-	const tpl = `
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<title>{{.Title}}</title>
-	</head>
-	<body>
-		{{range .Items}}<div>{{ . }}</div>{{else}}<div><strong>no rows</strong></div>{{end}}
-	</body>
-</html>`
-
-	f, err := os.Create(os.Args[1])
-	check(err)
-
-	defer f.Close()
-
-	t, err := template.New("webpage").Parse(tpl)
-	check(err)
-
-	data := struct {
-		Title string
-		Items []string
-	}{
-		Title: "My page",
-		Items: []string{
-			"My photos",
-			"My blog",
+	data := Employee{
+		FirstName: "Mark",
+		LastName:  "Jones",
+		Email:     "mark@gmail.com",
+		Age:       25,
+		MonthlySalary: []Salary{
+			Salary{
+				Basic: 15000.00,
+				HRA:   5000.00,
+				TA:    2000.00,
+			},
+			Salary{
+				Basic: 16000.00,
+				HRA:   5000.00,
+				TA:    2100.00,
+			},
+			Salary{
+				Basic: 17000.00,
+				HRA:   5000.00,
+				TA:    2200.00,
+			},
 		},
 	}
 
-	w := bufio.NewWriter(f)
-	err = t.Execute(w, data)
-	check(err)
+	file, _ := json.Marshal(data)
 
-	noItems := struct {
-		Title string
-		Items []string
-	}{
-		Title: "My another page",
-		Items: []string{},
-	}
-
-	err = t.Execute(w, noItems)
-	check(err)
-
-	w.Flush()
+	_ = ioutil.WriteFile(os.Args[1], file, 0644)
 }
