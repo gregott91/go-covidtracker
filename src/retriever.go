@@ -15,12 +15,15 @@ type rawCovidData struct {
 	DeathIncrease    int
 }
 
+type DataPoint struct {
+	NewCount   int
+	TotalCount int
+}
+
 type DailyCovidData struct {
-	Date            time.Time
-	NewDeaths       int
-	NewInfections   int
-	TotalDeaths     int
-	TotalInfections int
+	Date   time.Time
+	Deaths *DataPoint
+	Cases  *DataPoint
 }
 
 type CovidData struct {
@@ -59,10 +62,14 @@ func convertData(rawData rawCovidData) (DailyCovidData, error) {
 	}
 
 	return DailyCovidData{
-		Date:            date,
-		NewDeaths:       rawData.DeathIncrease,
-		NewInfections:   rawData.PositiveIncrease,
-		TotalDeaths:     rawData.Death,
-		TotalInfections: rawData.Positive,
+		Date: date,
+		Deaths: &DataPoint{
+			NewCount:   rawData.Death,
+			TotalCount: rawData.DeathIncrease,
+		},
+		Cases: &DataPoint{
+			NewCount:   rawData.Positive,
+			TotalCount: rawData.PositiveIncrease,
+		},
 	}, nil
 }
