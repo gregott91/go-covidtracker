@@ -6,13 +6,15 @@ import (
 )
 
 type rawCovidData struct {
-	Date             int
-	Positive         int
-	Negative         int
-	Hospitalized     int
-	Death            int
-	PositiveIncrease int
-	DeathIncrease    int
+	Date                     int
+	Positive                 int
+	Death                    int
+	PositiveIncrease         int
+	DeathIncrease            int
+	TotalTestResults         int
+	TotalTestResultsIncrease int
+	HospitalizedCumulative   int
+	HospitalizedIncrease     int
 }
 
 type DataPoint struct {
@@ -21,9 +23,11 @@ type DataPoint struct {
 }
 
 type DailyCovidData struct {
-	Date   time.Time
-	Deaths *DataPoint
-	Cases  *DataPoint
+	Date             time.Time
+	Deaths           *DataPoint
+	Cases            *DataPoint
+	Hospitalizations *DataPoint
+	Tests            *DataPoint
 }
 
 type CovidData struct {
@@ -70,6 +74,14 @@ func convertData(rawData rawCovidData) (DailyCovidData, error) {
 		Cases: &DataPoint{
 			TotalCount: rawData.Positive,
 			NewCount:   rawData.PositiveIncrease,
+		},
+		Hospitalizations: &DataPoint{
+			TotalCount: rawData.HospitalizedCumulative,
+			NewCount:   rawData.HospitalizedIncrease,
+		},
+		Tests: &DataPoint{
+			TotalCount: rawData.TotalTestResults,
+			NewCount:   rawData.TotalTestResultsIncrease,
 		},
 	}, nil
 }
