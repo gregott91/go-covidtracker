@@ -17,6 +17,11 @@ type rawCovidData struct {
 	HospitalizedIncrease     int
 }
 
+type DataType struct {
+	Name       string
+	IsPositive bool
+}
+
 type DataPoint struct {
 	NewCount   int
 	TotalCount int
@@ -33,6 +38,7 @@ type DailyCovidData struct {
 type CovidData struct {
 	DailyData     *[]DailyCovidData
 	RetrievalTime time.Time
+	DataTypes     []DataType
 }
 
 func RetrieveData() (*CovidData, error) {
@@ -55,6 +61,12 @@ func RetrieveData() (*CovidData, error) {
 	return &CovidData{
 		DailyData:     &data,
 		RetrievalTime: time.Now(),
+		DataTypes: []DataType{
+			{Name: "Deaths", IsPositive: false},
+			{Name: "Cases", IsPositive: false},
+			{Name: "Hospitalizations", IsPositive: false},
+			{Name: "Tests", IsPositive: true},
+		},
 	}, nil
 }
 
