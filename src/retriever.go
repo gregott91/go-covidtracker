@@ -79,13 +79,13 @@ func convertData(rawData rawCovidData) (DailyCovidData, error) {
 
 	return DailyCovidData{
 		Date: date,
-		Deaths: &DataPoint{
-			TotalCount: rawData.Death,
-			NewCount:   rawData.DeathIncrease,
-		},
 		Cases: &DataPoint{
 			TotalCount: rawData.Positive,
 			NewCount:   rawData.PositiveIncrease,
+		},
+		Deaths: &DataPoint{
+			TotalCount: rawData.Death,
+			NewCount:   rawData.DeathIncrease,
 		},
 		Hospitalizations: &DataPoint{
 			TotalCount: rawData.HospitalizedCumulative,
