@@ -62,8 +62,8 @@ func RetrieveData() (*CovidData, error) {
 		DailyData:     &data,
 		RetrievalTime: time.Now(),
 		DataTypes: []DataType{
-			{Name: "Deaths", IsPositive: false},
 			{Name: "Cases", IsPositive: false},
+			{Name: "Deaths", IsPositive: false},
 			{Name: "Hospitalizations", IsPositive: false},
 			{Name: "Tests", IsPositive: true},
 		},
