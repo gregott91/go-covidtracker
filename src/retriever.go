@@ -29,8 +29,8 @@ type DataPoint struct {
 
 type DailyCovidData struct {
 	Date             time.Time
-	Deaths           *DataPoint
 	Cases            *DataPoint
+	Deaths           *DataPoint
 	Hospitalizations *DataPoint
 	Tests            *DataPoint
 }
