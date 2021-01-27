@@ -6,7 +6,7 @@ This repository will download US daily COVID data from [The COVID Tracking Proje
 
 ## Building
 
-From the top level of the directory, run the following commands:
+From the top level of the directory, run the following command:
 
 ```Go
 go build
@@ -16,7 +16,7 @@ go build
 
 Once the EXE has been build, you must pass it a single command line argument, containing the file path where the data should be saved. For example:
 
-From the top level of the directory, run the following commands:
+From the directory containing the EXE, run the following command:
 
 ```
 .\covidtracker.exe "C:\data.json"
