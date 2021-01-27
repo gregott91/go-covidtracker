@@ -1,11 +1,7 @@
 package covidtracker
 
-import (
-	"strconv"
-	"time"
-)
-
-type rawCovidData struct {
+// RawCovidData contains the raw covid datapoints
+type RawCovidData struct {
 	Date                     int
 	Positive                 int
 	Death                    int
@@ -17,83 +13,12 @@ type rawCovidData struct {
 	HospitalizedIncrease     int
 }
 
-type DataType struct {
-	Name       string
-	IsPositive bool
-}
-
-type DataPoint struct {
-	NewCount   int
-	TotalCount int
-}
-
-type DailyCovidData struct {
-	Date             time.Time
-	Cases            *DataPoint
-	Deaths           *DataPoint
-	Hospitalizations *DataPoint
-	Tests            *DataPoint
-}
-
-type CovidData struct {
-	DailyData     *[]DailyCovidData
-	RetrievalTime time.Time
-	DataTypes     []DataType
-}
-
-func RetrieveData() (*CovidData, error) {
-	var rawData []rawCovidData
+// RetrieveData retrieves the covid data from the API
+func RetrieveData() (*[]RawCovidData, error) {
+	var rawData []RawCovidData
 	if err := DownloadData("https://api.covidtracking.com/v1/us/daily.json", &rawData); err != nil {
-		return &CovidData{}, err
+		return &[]RawCovidData{}, err
 	}
 
-	var data []DailyCovidData
-	for _, rawDataPoint := range rawData {
-		parsed, err := convertData(rawDataPoint)
-
-		if err != nil {
-			return &CovidData{}, err
-		}
-
-		data = append(data, parsed)
-	}
-
-	return &CovidData{
-		DailyData:     &data,
-		RetrievalTime: time.Now(),
-		DataTypes: []DataType{
-			{Name: "Cases", IsPositive: false},
-			{Name: "Deaths", IsPositive: false},
-			{Name: "Hospitalizations", IsPositive: false},
-			{Name: "Tests", IsPositive: true},
-		},
-	}, nil
-}
-
-func convertData(rawData rawCovidData) (DailyCovidData, error) {
-	date, err := time.Parse("20060102", strconv.Itoa(rawData.Date))
-
-	if err != nil {
-		return DailyCovidData{}, err
-	}
-
-	return DailyCovidData{
-		Date: date,
-		Cases: &DataPoint{
-			TotalCount: rawData.Positive,
-			NewCount:   rawData.PositiveIncrease,
-		},
-		Deaths: &DataPoint{
-			TotalCount: rawData.Death,
-			NewCount:   rawData.DeathIncrease,
-		},
-		Hospitalizations: &DataPoint{
-			TotalCount: rawData.HospitalizedCumulative,
-			NewCount:   rawData.HospitalizedIncrease,
-		},
-		Tests: &DataPoint{
-			TotalCount: rawData.TotalTestResults,
-			NewCount:   rawData.TotalTestResultsIncrease,
-		},
-	}, nil
+	return &rawData, nil
 }

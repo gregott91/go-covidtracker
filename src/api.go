@@ -6,6 +6,7 @@ import (
 	"net/http"
 )
 
+// DownloadData downloads JSON data and deserializes it into the passed type
 func DownloadData(url string, dataType interface{}) error {
 	resp, err := http.Get(url)
 	if err != nil {
