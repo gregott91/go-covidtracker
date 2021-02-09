@@ -2,12 +2,17 @@ package covidtracker
 
 // RunApp configures the starting and running of the application
 func RunApp(fileName string) error {
-	rawData, err := RetrieveData()
+	nytData, err := GetNytData()
 	if err != nil {
 		return err
 	}
 
-	data, err := FormatData(rawData)
+	vaccines, err := GetVaccineData()
+	if err != nil {
+		return err
+	}
+
+	data, err := FormatData(nytData, *vaccines)
 	if err != nil {
 		return err
 	}

@@ -6,7 +6,12 @@ import (
 )
 
 func main() {
-	if err := covidtracker.RunApp(os.Args[1]); err != nil {
+	fileName := "test.json"
+	if len(os.Args) > 1 {
+		fileName = os.Args[1]
+	}
+
+	if err := covidtracker.RunApp(fileName); err != nil {
 		panic(err)
 	}
 }

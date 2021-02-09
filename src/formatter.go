@@ -1,7 +1,6 @@
 package covidtracker
 
 import (
-	"strconv"
 	"time"
 )
 
@@ -19,11 +18,10 @@ type DataPoint struct {
 
 // DailyCovidData contains all the data for a single day
 type DailyCovidData struct {
-	Date             time.Time
-	Cases            *DataPoint
-	Deaths           *DataPoint
-	Hospitalizations *DataPoint
-	Tests            *DataPoint
+	Date     time.Time
+	Cases    *DataPoint
+	Deaths   *DataPoint
+	Vaccines *DataPoint
 }
 
 // CovidData contains all the data across all days
@@ -34,10 +32,13 @@ type CovidData struct {
 }
 
 // FormatData formats the raw data
-func FormatData(rawData *[]RawCovidData) (*CovidData, error) {
+func FormatData(covidData *[]NytData, vaccines map[time.Time]int) (*CovidData, error) {
 	var data []DailyCovidData
-	for _, rawDataPoint := range *rawData {
-		parsed, err := convertData(rawDataPoint)
+	prevVaccineCount := 0
+	for _, rawDataPoint := range *covidData {
+		parsed, err := convertData(rawDataPoint, prevVaccineCount, vaccines)
+
+		prevVaccineCount = parsed.Vaccines.TotalCount
 
 		if err != nil {
 			return &CovidData{}, err
@@ -47,41 +48,39 @@ func FormatData(rawData *[]RawCovidData) (*CovidData, error) {
 	}
 
 	return &CovidData{
-		DailyData:     &data,
+		DailyData:     reverse(data),
 		RetrievalTime: time.Now(),
 		DataTypes: []DataType{
 			{Name: "Cases", IsPositive: false},
 			{Name: "Deaths", IsPositive: false},
-			{Name: "Hospitalizations", IsPositive: false},
-			{Name: "Tests", IsPositive: true},
+			{Name: "Vaccines", IsPositive: true},
 		},
 	}, nil
 }
 
-func convertData(rawData RawCovidData) (DailyCovidData, error) {
-	date, err := time.Parse("20060102", strconv.Itoa(rawData.Date))
-
-	if err != nil {
-		return DailyCovidData{}, err
+func reverse(data []DailyCovidData) *[]DailyCovidData {
+	for i, j := 0, len(data)-1; i < j; i, j = i+1, j-1 {
+		data[i], data[j] = data[j], data[i]
 	}
+	return &data
+}
+
+func convertData(rawData NytData, prevVaccineCount int, vaccines map[time.Time]int) (DailyCovidData, error) {
+	totalVaccines := vaccines[rawData.Date]
 
 	return DailyCovidData{
-		Date: date,
+		Date: rawData.Date,
 		Cases: &DataPoint{
-			TotalCount: rawData.Positive,
-			NewCount:   rawData.PositiveIncrease,
+			TotalCount: rawData.Cases.TotalCount,
+			NewCount:   rawData.Cases.NewCount,
 		},
 		Deaths: &DataPoint{
-			TotalCount: rawData.Death,
-			NewCount:   rawData.DeathIncrease,
+			TotalCount: rawData.Deaths.TotalCount,
+			NewCount:   rawData.Deaths.NewCount,
 		},
-		Hospitalizations: &DataPoint{
-			TotalCount: rawData.HospitalizedCumulative,
-			NewCount:   rawData.HospitalizedIncrease,
-		},
-		Tests: &DataPoint{
-			TotalCount: rawData.TotalTestResults,
-			NewCount:   rawData.TotalTestResultsIncrease,
+		Vaccines: &DataPoint{
+			TotalCount: totalVaccines,
+			NewCount:   totalVaccines - prevVaccineCount,
 		},
 	}, nil
 }
