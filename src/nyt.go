@@ -43,7 +43,7 @@ func GetNytData() (*[]NytData, error) {
 
 func retrieveNytData() (*[]rawCovidData, error) {
 	var rawData []rawCovidData
-	if err := DownloadData("https://disease.sh/v3/covid-19/nyt/usa", &rawData); err != nil {
+	if err := DownloadDataJSON("https://disease.sh/v3/covid-19/nyt/usa", &rawData); err != nil {
 		return &[]rawCovidData{}, err
 	}
 
