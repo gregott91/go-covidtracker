@@ -32,7 +32,7 @@ type CovidData struct {
 }
 
 // FormatData formats the raw data
-func FormatData(covidData *[]NytData, vaccines map[time.Time]int) (*CovidData, error) {
+func FormatData(covidData *[]CountData, vaccines map[time.Time]int) (*CovidData, error) {
 	var data []DailyCovidData
 	prevVaccineCount := 0
 	for _, rawDataPoint := range *covidData {
@@ -65,7 +65,7 @@ func reverse(data []DailyCovidData) *[]DailyCovidData {
 	return &data
 }
 
-func convertData(rawData NytData, prevVaccineCount int, vaccines map[time.Time]int) (DailyCovidData, error) {
+func convertData(rawData CountData, prevVaccineCount int, vaccines map[time.Time]int) (DailyCovidData, error) {
 	totalVaccines := vaccines[rawData.Date]
 
 	return DailyCovidData{

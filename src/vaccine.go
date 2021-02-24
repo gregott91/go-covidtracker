@@ -1,12 +1,9 @@
 package covidtracker
 
 import (
+	"strconv"
 	"time"
 )
-
-type rawVaccineData struct {
-	Timeline map[string]int
-}
 
 // GetVaccineData formats the raw data
 func GetVaccineData() (*map[time.Time]int, error) {
@@ -15,25 +12,53 @@ func GetVaccineData() (*map[time.Time]int, error) {
 		return nil, err
 	}
 
+	rawData = filterToUnitedStates(rawData)
+	rawData = reduceToRelevantData(rawData)
+
 	converted := make(map[time.Time]int)
-	for key, element := range rawData.Timeline {
-		date, err := time.Parse("1/2/06", key)
+	for _, element := range rawData {
+		date, err := time.Parse("2006-01-02", element[0])
 
 		if err != nil {
 			return &converted, err
 		}
 
-		converted[date] = element
+		f, err := strconv.ParseFloat(element[1], 64)
+		if err != nil {
+			return &converted, err
+		}
+
+		converted[date] = int(f)
 	}
 
 	return &converted, nil
 }
 
-func retrieveVaccineData() (*rawVaccineData, error) {
-	var rawData rawVaccineData
-	if err := DownloadDataJSON("https://disease.sh/v3/covid-19/vaccine/coverage/countries/usa?lastdays=all", &rawData); err != nil {
-		return &rawVaccineData{}, err
+func filterToUnitedStates(data [][]string) (ret [][]string) {
+	for _, s := range data {
+		if s[1] == "United States" {
+			ret = append(ret, s)
+		}
+	}
+	return
+}
+
+func reduceToRelevantData(data [][]string) (ret [][]string) {
+	for index, s := range data {
+		reduced := []string{s[0], s[2]}
+		if len(reduced[1]) <= 0 && index > 0 {
+			reduced[1] = ret[index-1][1]
+		}
+		ret = append(ret, reduced)
+	}
+	return
+}
+
+func retrieveVaccineData() ([][]string, error) {
+	records, err := DownloadDataCsv("https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/vaccinations/us_state_vaccinations.csv")
+	if err != nil {
+		return nil, err
 	}
 
-	return &rawData, nil
+	return records, nil
 }

@@ -2,8 +2,8 @@ package covidtracker
 
 import "time"
 
-// NytData contains all the data for a single day
-type NytData struct {
+// CountData contains all the data for a single day
+type CountData struct {
 	Date   time.Time
 	Cases  *DataPoint
 	Deaths *DataPoint
@@ -15,21 +15,21 @@ type rawCovidData struct {
 	Deaths int
 }
 
-// GetNytData formats the raw data
-func GetNytData() (*[]NytData, error) {
-	var rawData, err = retrieveNytData()
+// GetCountData formats the raw data
+func GetCountData() (*[]CountData, error) {
+	var rawData, err = retrieveCountData()
 	if err != nil {
 		return nil, err
 	}
 
-	var data []NytData
+	var data []CountData
 	for index, rawDataPoint := range *rawData {
 		var prevRawData = rawCovidData{Cases: 0, Deaths: 0}
 		if index > 0 {
 			prevRawData = (*rawData)[index-1]
 		}
 
-		parsed, err := convertNytData(rawDataPoint, prevRawData)
+		parsed, err := convertCountData(rawDataPoint, prevRawData)
 
 		if err != nil {
 			return &data, err
@@ -41,7 +41,7 @@ func GetNytData() (*[]NytData, error) {
 	return &data, nil
 }
 
-func retrieveNytData() (*[]rawCovidData, error) {
+func retrieveCountData() (*[]rawCovidData, error) {
 	var rawData []rawCovidData
 	if err := DownloadDataJSON("https://disease.sh/v3/covid-19/nyt/usa", &rawData); err != nil {
 		return &[]rawCovidData{}, err
@@ -50,14 +50,14 @@ func retrieveNytData() (*[]rawCovidData, error) {
 	return &rawData, nil
 }
 
-func convertNytData(rawData rawCovidData, prevRawData rawCovidData) (NytData, error) {
+func convertCountData(rawData rawCovidData, prevRawData rawCovidData) (CountData, error) {
 	date, err := time.Parse("2006-01-02", rawData.Date)
 
 	if err != nil {
-		return NytData{}, err
+		return CountData{}, err
 	}
 
-	return NytData{
+	return CountData{
 		Date: date,
 		Cases: &DataPoint{
 			TotalCount: rawData.Cases,
