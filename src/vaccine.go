@@ -12,9 +12,10 @@ func GetVaccineData() (*map[time.Time]int, error) {
 		return nil, err
 	}
 
-	rawData = filterToUnitedStates(rawData)
-	rawData = reduceToRelevantData(rawData)
+	rawData = FilterCsv(rawData, "United States", 1)
+	rawData = ReduceCsvColumns(rawData, []int{0, 2})
 
+	previous := 0
 	converted := make(map[time.Time]int)
 	for _, element := range rawData {
 		date, err := time.Parse("2006-01-02", element[0])
@@ -25,33 +26,19 @@ func GetVaccineData() (*map[time.Time]int, error) {
 
 		f, err := strconv.ParseFloat(element[1], 64)
 		if err != nil {
-			return &converted, err
+			f = 0
+		}
+		intF := int(f)
+
+		if intF == 0 {
+			intF = previous
 		}
 
-		converted[date] = int(f)
+		converted[date] = intF
+		previous = intF
 	}
 
 	return &converted, nil
-}
-
-func filterToUnitedStates(data [][]string) (ret [][]string) {
-	for _, s := range data {
-		if s[1] == "United States" {
-			ret = append(ret, s)
-		}
-	}
-	return
-}
-
-func reduceToRelevantData(data [][]string) (ret [][]string) {
-	for index, s := range data {
-		reduced := []string{s[0], s[2]}
-		if len(reduced[1]) <= 0 && index > 0 {
-			reduced[1] = ret[index-1][1]
-		}
-		ret = append(ret, reduced)
-	}
-	return
 }
 
 func retrieveVaccineData() ([][]string, error) {
