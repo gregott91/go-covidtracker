@@ -13,7 +13,7 @@ func GetVaccineData() (*map[time.Time]int, error) {
 	}
 
 	rawData = FilterCsv(rawData, "United States", 1)
-	rawData = ReduceCsvColumns(rawData, []int{0, 2})
+	rawData = ReduceCsvColumns(rawData, []int{0, 5})
 
 	previous := 0
 	converted := make(map[time.Time]int)
