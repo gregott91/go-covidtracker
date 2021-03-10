@@ -60,11 +60,14 @@ func GetDailyData() (*[]DailyDataPoint, error) {
 		}
 
 		prevFullVaccinations := 0
-		prevHospitalizations := 0
+		currFullVaccinations := int(element.People_fully_vaccinated)
 
 		if index > 0 {
 			prevFullVaccinations = data[index-1].TotalPeopleFullyVaccinated
-			prevHospitalizations = data[index-1].TotalPeopleHospitalized
+		}
+
+		if currFullVaccinations == 0 {
+			currFullVaccinations = prevFullVaccinations
 		}
 
 		dataPoint := DailyDataPoint{
@@ -77,10 +80,8 @@ func GetDailyData() (*[]DailyDataPoint, error) {
 			NewTests:                   int(element.New_tests),
 			TotalVaccinations:          int(element.Total_vaccinations),
 			NewVaccinations:            int(element.New_vaccinations),
-			TotalPeopleFullyVaccinated: int(element.People_fully_vaccinated),
-			NewPeopleFullyVaccinated:   int(element.People_fully_vaccinated) - prevFullVaccinations,
-			TotalPeopleHospitalized:    int(element.Hosp_patients),
-			NewPeopleHospitalized:      int(element.Hosp_patients) - prevHospitalizations,
+			TotalPeopleFullyVaccinated: currFullVaccinations,
+			NewPeopleFullyVaccinated:   currFullVaccinations - prevFullVaccinations,
 		}
 
 		data = append(data, dataPoint)
