@@ -18,10 +18,12 @@ type DataPoint struct {
 
 // DailyCovidData contains all the data for a single day
 type DailyCovidData struct {
-	Date     time.Time
-	Cases    *DataPoint
-	Deaths   *DataPoint
-	Vaccines *DataPoint
+	Date         time.Time
+	Cases        *DataPoint
+	Deaths       *DataPoint
+	AllVaccines  *DataPoint
+	FullVaccines *DataPoint
+	Tests        *DataPoint
 }
 
 // CovidData contains all the data across all days
@@ -32,13 +34,10 @@ type CovidData struct {
 }
 
 // FormatData formats the raw data
-func FormatData(covidData *[]CountData, vaccines map[time.Time]int) (*CovidData, error) {
+func FormatData(covidData *[]DailyDataPoint) (*CovidData, error) {
 	var data []DailyCovidData
-	prevVaccineCount := 0
 	for _, rawDataPoint := range *covidData {
-		parsed, err := convertData(rawDataPoint, prevVaccineCount, vaccines)
-
-		prevVaccineCount = parsed.Vaccines.TotalCount
+		parsed, err := convertData(rawDataPoint)
 
 		if err != nil {
 			return &CovidData{}, err
@@ -53,7 +52,9 @@ func FormatData(covidData *[]CountData, vaccines map[time.Time]int) (*CovidData,
 		DataTypes: []DataType{
 			{Name: "Cases", IsPositive: false},
 			{Name: "Deaths", IsPositive: false},
-			{Name: "Vaccines", IsPositive: true},
+			{Name: "AllVaccines", IsPositive: true},
+			{Name: "FullVaccines", IsPositive: true},
+			{Name: "Tests", IsPositive: true},
 		},
 	}, nil
 }
@@ -65,22 +66,28 @@ func reverse(data []DailyCovidData) *[]DailyCovidData {
 	return &data
 }
 
-func convertData(rawData CountData, prevVaccineCount int, vaccines map[time.Time]int) (DailyCovidData, error) {
-	totalVaccines := vaccines[rawData.Date]
-
+func convertData(rawData DailyDataPoint) (DailyCovidData, error) {
 	return DailyCovidData{
 		Date: rawData.Date,
 		Cases: &DataPoint{
-			TotalCount: rawData.Cases.TotalCount,
-			NewCount:   rawData.Cases.NewCount,
+			TotalCount: rawData.TotalCases,
+			NewCount:   rawData.NewCases,
 		},
 		Deaths: &DataPoint{
-			TotalCount: rawData.Deaths.TotalCount,
-			NewCount:   rawData.Deaths.NewCount,
+			TotalCount: rawData.TotalDeaths,
+			NewCount:   rawData.NewDeaths,
 		},
-		Vaccines: &DataPoint{
-			TotalCount: totalVaccines,
-			NewCount:   totalVaccines - prevVaccineCount,
+		AllVaccines: &DataPoint{
+			TotalCount: rawData.TotalVaccinations,
+			NewCount:   rawData.NewVaccinations,
+		},
+		FullVaccines: &DataPoint{
+			TotalCount: rawData.TotalPeopleFullyVaccinated,
+			NewCount:   rawData.NewPeopleFullyVaccinated,
+		},
+		Tests: &DataPoint{
+			TotalCount: rawData.TotalTests,
+			NewCount:   rawData.NewTests,
 		},
 	}, nil
 }
