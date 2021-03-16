@@ -84,10 +84,32 @@ func GetDailyData() (*[]DailyDataPoint, error) {
 			NewPeopleFullyVaccinated:   currFullVaccinations - prevFullVaccinations,
 		}
 
+		if index > 0 {
+			dataPoint = cleanDailyData(dataPoint, data[index-1])
+		}
+
 		data = append(data, dataPoint)
 	}
 
 	return &data, nil
+}
+
+func cleanDailyData(today DailyDataPoint, yesterday DailyDataPoint) DailyDataPoint {
+	today.TotalCases = cleanProperty(today.TotalCases, yesterday.TotalCases)
+	today.TotalDeaths = cleanProperty(today.TotalDeaths, yesterday.TotalDeaths)
+	today.TotalPeopleFullyVaccinated = cleanProperty(today.TotalPeopleFullyVaccinated, yesterday.TotalPeopleFullyVaccinated)
+	today.TotalVaccinations = cleanProperty(today.TotalVaccinations, yesterday.TotalVaccinations)
+	today.TotalTests = cleanProperty(today.TotalTests, yesterday.TotalTests)
+
+	return today
+}
+
+func cleanProperty(today int, yesterday int) int {
+	if today == 0 {
+		return yesterday
+	}
+
+	return today
 }
 
 func getOwidData() (DeserializedData, error) {
