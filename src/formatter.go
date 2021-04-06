@@ -6,24 +6,28 @@ import (
 
 // DataType defines a type of data returned by the JSON
 type DataType struct {
-	Name       string
-	IsPositive bool
+	Name         string
+	Display      string
+	IsPositive   bool
+	IsCumulative bool
 }
 
 // DataPoint is a single point of data for a single day
 type DataPoint struct {
-	NewCount   int
-	TotalCount int
+	NewCount   float32
+	TotalCount float32
 }
 
 // DailyCovidData contains all the data for a single day
 type DailyCovidData struct {
-	Date         time.Time
-	Cases        *DataPoint
-	Deaths       *DataPoint
-	AllVaccines  *DataPoint
-	FullVaccines *DataPoint
-	Tests        *DataPoint
+	Date             time.Time
+	Cases            *DataPoint
+	Deaths           *DataPoint
+	AllVaccines      *DataPoint
+	FullVaccines     *DataPoint
+	Tests            *DataPoint
+	Hospitalizations *DataPoint
+	Mortality        *DataPoint
 }
 
 // CovidData contains all the data across all days
@@ -50,11 +54,13 @@ func FormatData(covidData *[]DailyDataPoint) (*CovidData, error) {
 		DailyData:     reverse(data),
 		RetrievalTime: time.Now(),
 		DataTypes: []DataType{
-			{Name: "Cases", IsPositive: false},
-			{Name: "Deaths", IsPositive: false},
-			{Name: "AllVaccines", IsPositive: true},
-			{Name: "FullVaccines", IsPositive: true},
-			{Name: "Tests", IsPositive: true},
+			{Name: "Cases", IsPositive: false, IsCumulative: true},
+			{Name: "Deaths", IsPositive: false, IsCumulative: true},
+			{Name: "AllVaccines", Display: "All Vaccines", IsPositive: true, IsCumulative: true},
+			{Name: "FullVaccines", Display: "Full Vaccines", IsPositive: true, IsCumulative: true},
+			{Name: "Tests", IsPositive: true, IsCumulative: true},
+			{Name: "Hospitalizations", IsPositive: true, IsCumulative: false},
+			{Name: "Mortality", IsPositive: true, IsCumulative: false},
 		},
 	}, nil
 }
@@ -70,24 +76,30 @@ func convertData(rawData DailyDataPoint) (DailyCovidData, error) {
 	return DailyCovidData{
 		Date: rawData.Date,
 		Cases: &DataPoint{
-			TotalCount: rawData.TotalCases,
-			NewCount:   rawData.NewCases,
+			TotalCount: float32(rawData.TotalCases),
+			NewCount:   float32(rawData.NewCases),
 		},
 		Deaths: &DataPoint{
-			TotalCount: rawData.TotalDeaths,
-			NewCount:   rawData.NewDeaths,
+			TotalCount: float32(rawData.TotalDeaths),
+			NewCount:   float32(rawData.NewDeaths),
 		},
 		AllVaccines: &DataPoint{
-			TotalCount: rawData.TotalVaccinations,
-			NewCount:   rawData.NewVaccinations,
+			TotalCount: float32(rawData.TotalVaccinations),
+			NewCount:   float32(rawData.NewVaccinations),
 		},
 		FullVaccines: &DataPoint{
-			TotalCount: rawData.TotalPeopleFullyVaccinated,
-			NewCount:   rawData.NewPeopleFullyVaccinated,
+			TotalCount: float32(rawData.TotalPeopleFullyVaccinated),
+			NewCount:   float32(rawData.NewPeopleFullyVaccinated),
 		},
 		Tests: &DataPoint{
-			TotalCount: rawData.TotalTests,
-			NewCount:   rawData.NewTests,
+			TotalCount: float32(rawData.TotalTests),
+			NewCount:   float32(rawData.NewTests),
+		},
+		Hospitalizations: &DataPoint{
+			NewCount: float32(rawData.Hospitalizations),
+		},
+		Mortality: &DataPoint{
+			NewCount: float32(rawData.MortalityRate),
 		},
 	}, nil
 }
