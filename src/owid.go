@@ -71,7 +71,7 @@ func GetDailyData() (*[]DailyDataPoint, error) {
 		}
 
 		lookbackDays := 28
-		earliestMortalityData := time.Date(2020, time.Month(5), 21, 1, 10, 30, 0, time.UTC)
+		earliestMortalityData := time.Date(2020, time.Month(4), 30, 0, 0, 0, 0, time.UTC)
 		var mortality float32 = 0.0
 		if index >= lookbackDays && date.After(earliestMortalityData) {
 			lookbackCases := float32(data[index-lookbackDays].NewCases)

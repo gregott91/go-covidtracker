@@ -10,6 +10,7 @@ type DataType struct {
 	Display      string
 	IsPositive   bool
 	IsCumulative bool
+	ShowDecimals bool
 }
 
 // DataPoint is a single point of data for a single day
@@ -54,13 +55,13 @@ func FormatData(covidData *[]DailyDataPoint) (*CovidData, error) {
 		DailyData:     reverse(data),
 		RetrievalTime: time.Now(),
 		DataTypes: []DataType{
-			{Name: "Cases", IsPositive: false, IsCumulative: true},
-			{Name: "Deaths", IsPositive: false, IsCumulative: true},
-			{Name: "AllVaccines", Display: "All Vaccines", IsPositive: true, IsCumulative: true},
-			{Name: "FullVaccines", Display: "Full Vaccines", IsPositive: true, IsCumulative: true},
-			{Name: "Tests", IsPositive: true, IsCumulative: true},
-			{Name: "Hospitalizations", IsPositive: true, IsCumulative: false},
-			{Name: "Mortality", IsPositive: true, IsCumulative: false},
+			{Name: "Cases", Display: "Cases", IsPositive: false, IsCumulative: true, ShowDecimals: false},
+			{Name: "Deaths", Display: "Deaths", IsPositive: false, IsCumulative: true, ShowDecimals: false},
+			{Name: "AllVaccines", Display: "All Vaccines", IsPositive: true, IsCumulative: true, ShowDecimals: false},
+			{Name: "FullVaccines", Display: "Full Vaccines", IsPositive: true, IsCumulative: true, ShowDecimals: false},
+			{Name: "Tests", Display: "Tests", IsPositive: true, IsCumulative: true, ShowDecimals: false},
+			{Name: "Hospitalizations", Display: "Hospitalizations", IsPositive: false, IsCumulative: false, ShowDecimals: false},
+			{Name: "Mortality", Display: "Mortality", IsPositive: false, IsCumulative: false, ShowDecimals: true},
 		},
 	}, nil
 }
