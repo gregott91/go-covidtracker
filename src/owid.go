@@ -17,6 +17,8 @@ type DailyDataPoint struct {
 	NewVaccinations            int
 	TotalPeopleFullyVaccinated int
 	NewPeopleFullyVaccinated   int
+	TotalPeopleVaccinated      int
+	NewPeopleVaccinated        int
 	Hospitalizations           int
 	MortalityRate              float32
 }
@@ -41,6 +43,7 @@ type DeserializedDaily struct {
 	Total_vaccinations      float32
 	New_vaccinations        float32
 	People_fully_vaccinated float32
+	People_vaccinated       float32
 	Hosp_patients           float32
 }
 
@@ -70,6 +73,17 @@ func GetDailyData() (*[]DailyDataPoint, error) {
 			currFullVaccinations = prevFullVaccinations
 		}
 
+		prevVaccinations := 0
+		currVaccinations := int(element.People_vaccinated)
+
+		if index > 0 {
+			prevVaccinations = data[index-1].TotalPeopleVaccinated
+		}
+
+		if currVaccinations == 0 {
+			currVaccinations = prevVaccinations
+		}
+
 		lookbackDays := 28
 		earliestMortalityData := time.Date(2020, time.Month(4), 30, 0, 0, 0, 0, time.UTC)
 		var mortality float32 = 0.0
@@ -92,6 +106,8 @@ func GetDailyData() (*[]DailyDataPoint, error) {
 			NewVaccinations:            int(element.New_vaccinations),
 			TotalPeopleFullyVaccinated: currFullVaccinations,
 			NewPeopleFullyVaccinated:   currFullVaccinations - prevFullVaccinations,
+			NewPeopleVaccinated:        currVaccinations - prevVaccinations,
+			TotalPeopleVaccinated:      currVaccinations,
 			Hospitalizations:           int(element.Hosp_patients),
 			MortalityRate:              mortality,
 		}
