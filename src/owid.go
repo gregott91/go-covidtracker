@@ -84,7 +84,7 @@ func GetDailyData() (*[]DailyDataPoint, error) {
 			currVaccinations = prevVaccinations
 		}
 
-		lookbackDays := 28
+		lookbackDays := 21
 		earliestMortalityData := time.Date(2020, time.Month(4), 30, 0, 0, 0, 0, time.UTC)
 		var mortality float32 = 0.0
 		if index >= lookbackDays && date.After(earliestMortalityData) {
