@@ -94,8 +94,10 @@ func GetDailyData() (*[]DailyDataPoint, error) {
 				mortality = element.New_deaths / lookbackCases * 100.0
 			}
 		}
-
-		var positivity float32 = element.New_tests / element.New_cases * 100.0
+		var positivity float32 = 0.0
+		if element.New_tests > 0 {
+			positivity = element.New_cases / element.New_tests * 100.0
+		}
 
 		dataPoint := DailyDataPoint{
 			Date:                       date,
