@@ -21,6 +21,7 @@ type DailyDataPoint struct {
 	NewPeopleVaccinated        int
 	Hospitalizations           int
 	MortalityRate              float32
+	Positivity                 float32
 }
 
 type DeserializedData struct {
@@ -94,6 +95,8 @@ func GetDailyData() (*[]DailyDataPoint, error) {
 			}
 		}
 
+		var positivity float32 = element.New_tests / element.New_cases * 100.0
+
 		dataPoint := DailyDataPoint{
 			Date:                       date,
 			TotalCases:                 int(element.Total_cases),
@@ -110,6 +113,7 @@ func GetDailyData() (*[]DailyDataPoint, error) {
 			TotalPeopleVaccinated:      currVaccinations,
 			Hospitalizations:           int(element.Hosp_patients),
 			MortalityRate:              mortality,
+			Positivity:                 positivity,
 		}
 
 		if index > 0 {

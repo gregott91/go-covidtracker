@@ -30,6 +30,7 @@ type DailyCovidData struct {
 	Tests            *DataPoint
 	Hospitalizations *DataPoint
 	Mortality        *DataPoint
+	Positivity       *DataPoint
 }
 
 // CovidData contains all the data across all days
@@ -64,6 +65,7 @@ func FormatData(covidData *[]DailyDataPoint) (*CovidData, error) {
 			{Name: "Tests", Display: "Tests", IsPositive: true, IsCumulative: true, ShowDecimals: false},
 			{Name: "Hospitalizations", Display: "Hospitalizations", IsPositive: false, IsCumulative: false, ShowDecimals: false},
 			{Name: "Mortality", Display: "Mortality", IsPositive: false, IsCumulative: false, ShowDecimals: true},
+			{Name: "Positivity", Display: "Positivity", IsPositive: false, IsCumulative: false, ShowDecimals: true},
 		},
 	}, nil
 }
@@ -107,6 +109,9 @@ func convertData(rawData DailyDataPoint) (DailyCovidData, error) {
 		},
 		Mortality: &DataPoint{
 			NewCount: float32(rawData.MortalityRate),
+		},
+		Positivity: &DataPoint{
+			NewCount: float32(rawData.Positivity),
 		},
 	}, nil
 }
