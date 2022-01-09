@@ -145,7 +145,7 @@ func cleanProperty(today int, yesterday int) int {
 
 func getOwidData() (DeserializedData, error) {
 	var data DeserializedData
-	if err := DownloadDataJSON("https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.json", &data); err != nil {
+	if err := DownloadDataJSON("https://covid.ourworldindata.org/data/owid-covid-data.json", &data); err != nil {
 		return DeserializedData{}, err
 	}
 
